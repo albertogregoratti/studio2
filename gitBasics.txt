@@ -257,7 +257,7 @@ It's essentially a git fetch immediately followed by a git merge
 Push
 Send changes to the master branch of remote repository
 git push <remote> <branch>
-If you want to push your master branch to your origin server:
+If you want to push your (local) master branch to your (remote) origin server:
 git push origin master
 git push --tags origin	= push all tags to remote repo
 
