@@ -1,0 +1,306 @@
+﻿Ref:    https://git-scm.com/book/en/v2/
+        https://www.w3docs.com
+
+What's git
+- Keep track of all files in a project and Record any changes
+- Restore previous versions of files
+- Merge code from different computers and different team members
+
+
+Initialise git
+git config --global user.name "Your Name"
+git config --global user.mail "your e-mail"
+
+Check config
+git config --list
+git config user.name
+
+Help 
+git help
+git help commit
+
+Bash navigation essentials
+pwd = current directory
+ls 	= lists folders/files
+httpsmkdir = create a directory
+rm -r = deletes non-empty directories
+rm -d = removes empty directories
+cd .. = move 1 level down
+cd /c/dir/ = change to directory c:\dir
+touch filename	= create a file
+vi filename = visualize (open) a file (then type :qa to exit vi)
+clear =clear the screen
+Q key to exit in case of (END)
+
+Initialise a repository
+We can obtain a Git repository in one of two ways:
+1. You can take a local directory that is currently not under version control, and turn it into a Git repository, or
+2. You can clone (copy) an existing Git repository from elsewhere into a new directory.
+The git clone command initializes a new Git repo on your local machine.
+Ex: git clone https://github.com/albertogregoratti/dbt.git
+
+First we need to create a local repository in the project's root directory (folder). Afterwards, Git can track project files and directories and add them to the repository. 
+Technically a repository is just a (hidden) directory in the project's root directory. 
+
+git init = initialise a repository from a folder (empty or not: if files are present, add and commit)
+git clone <repository> <directory> clones a repository at <repo> into a local folder called <directory> [git clone https://github.com/ag/studio.git /home/al/dev/projects/]
+
+Add and Commit files
+If you want to start version-controlling existing files (as opposed to an empty directory), you should probably begin tracking those files and do an initial commit. You can accomplish that with a few git add commands that specify the files you want to track, followed by a git commit.
+
+Add and Commit change a file status (= moving to a different logical area)
+Working Area --> Staging Area --> Repository
+When you move files to the staging area, you actually gather and prepare files for Git before committing them to the local repository.
+
+git add . = add all to the staging area
+git add --all = add all files within any sub folder in the project folder
+git add filename = add a file to the staging area
+git commit -m "message" = add a file to the repository (taking a snapshot of the file)
+git commit -m "message" -- file1 file2
+A commit to a repository is a snapshot of the current state of the project's root directory.
+
+git commit -am "message" = shortcut to commit straight to repo from working area. Attention: it moves everything from working to repo
+
+Log
+https://www.w3docs.com/learn-git/git-log.html
+https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History
+
+Git creates a history of your commits.
+
+git log = commit full history
+git log --oneline --decorate  --graph
+git log -5 = log of the latest 5 commit
+git log <file> = displays commits related to a file
+git log -p = detailed log with diff
+git log --since="2020-02-18 00:00"  
+git log --since="2020-02-18 00:00" --format="medium"
+git log --author="alberto" = shows the commit history for user "alberto"
+git log --pretty=format:"%h %s" --graph
+
+
+Differences
+git diff = shows differences between a file in the repo and the working copy (in red what in the repo, in green what in the working copy)
+git diff --staged = compares files in staging area with repo
+
+
+Getting previous versions from Repo [https://www.w3docs.com/learn-git/undoing-changes-and-commits.html]
+Overwrite a file in working area with the copy available in repo
+git checkout master
+git checkout commit_number -- filename
+without [commit_number] the latest version is taken
+to complete, commit the file 
+
+Unstaging a file from staging area (reset a file from staging)
+git reset HEAD filename
+git reset => to unstage all files from staging
+
+Remove a file 
+from staging: git rm --cached filename
+from repo: 
+git rm filename
+git commit -m "removed f3"
+
+Move and Rename files
+git mv filename newfilename	= rename a file
+git commit -m "renamed file"
+
+git mv filename folder/newfilename = move a file into a subfolder
+git commit -m "moved file into a subfolder"
+
+Tags
+https://git-scm.com/book/en/v2/Git-Basics-Tagging
+Git has the ability to tag specific points in a repository’s history as being important (like a release)
+git tag 1.00 <commitID> = tagging can be used to mark a significant changeset like a realease
+
+Working with Branches
+https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell
+
+Branching is a way to manage different versions of your code, and acts as a pointer to a snapshot of your changes.
+Git does store data as a series of snapshots (not changes/delta).
+If you make some changes and commit again, the next commit stores a pointer to the commit that came immediately before it.
+A branch in Git is simply a lightweight movable pointer to one of these commits.
+The default branch name in Git is master. As you start making commits,
+you’re given a master branch that points to the last commit you made.
+Every time you commit, the master branch pointer moves forward automatically.
+
+Create a new branch
+Let’s say you want to create a new branch called testing. You do this with the git branch command:
+
+$ git branch testing
+
+Branches are isolated spaces to experiment and test new code without affecting the code in the main branch.
+This creates a new pointer to the same commit you're currently on.
+At this moment, both master and testing are pointing to the latest commit.
+How does Git know what branch you’re currently on? It keeps a special pointer called HEAD.
+At this moment HEAD is still pointing to master
+
+Attention: the git branch command only created a new branch, it didn’t switch to that branch.
+To switch to an existing branch, you run the git checkout command
+$ git checkout testing
+Now HEAD points to testing. Any new commit will create a new snapshot on the testing branch with HEAD pointing on it.
+The master branch still points to the commit you were on when you ran git checkout to switch branches.
+
+To switch back to master
+$ git checkout master
+now HEAD points to master.
+Note: testing branch doesn't appear in the log. To show all branches and where HEAD points use:
+git log --oneline --decorate
+
+To show the full commit history
+$ git log testing
+$ git log --all
+
+When checking out to master, git reverted the files in your working directory back to the snapshot that master points to.
+It’s important to note that when you switch branches in Git, files in your working directory will change.
+If you change something in testing, add and commit before checking out back to master.
+
+Comparing branches
+git diff branch1..branch2
+
+Merging branches
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+Say we have a hotfix to apply:
+1. create a new branch called hotfix
+2. checkout hotfix and apply the changes required. Add and Commit
+3. checkout master and run $ git merge hotfix
+Since hotfix was a branch directly ahead of master, git simply moves the pointer forward (to the latest commit pointed by hotfix) = Fast-Forward
+
+Since we have both master and hotfix pointing to the same commit, it's good practice to remove hotfix running:
+$ git branch -d hotfix
+
+When we need merging a branch with a development history that diverged git does use a recursive strategy.
+
+Branch management
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+To get a full list of branches:
+$ git branch
+A * indicates the branch where the HEAD points to.
+To see the last commit on each branch, you can run git branch -v
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+Local Vs Remote Repositories
+A remote repository serves as a central hub to which members of a development team can connect to access the project code.
+Git commands to move (push) your code from a local repository to a remote repository and to grab (pull) your team's collective code from a remote repository.
+
+If you want to get a copy of an existing Git repository the command you need is git clone.
+Every version of every file for the history of the project is pulled down by default when you run git clone.
+Like git init, cloning is generally a one-time operation. Once a developer has obtained a working copy,
+all version control operations and collaborations are managed through their local repository.
+
+Git’s collaboration model is based on repository-to-repository interaction: you push or pull commits from one repository to another.
+
+Working with Remote Repositories
+https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes
+
+Link a remote repository
+1. Create a new repo in gitHub: https://github.com/new
+2. Use git remote add origin to add the gitHub repo address
+   git remote add origin https://github.com/albertogregoratti/Test.git
+
+The default name of a remote repository is origin.
+We tell Git to "add" a repository. The "origin" option is the default name for the server on which your remote repository is located.
+GitHub can accept now files from our local repository.
+
+Clone a repository
+git clone is primarily used to point to an existing repo and make a clone or copy of that repo in a new directory,
+or at another location.
+
+Local repo
+git clone /path/to/repository
+
+Remote repo
+git clone username@host:/path/to/repository
+git clone https://github.com/reponame.git
+
+
+Adding locally hosted code to GitHub
+If you have source code stored locally on your computer that is tracked by Git (or even not tracked)
+you can add the code to GitHub following these steps:
+1. Create a new repository on GitHub
+2. Change the current working directory to your local project
+3. To add the URL of the remote repository on gitHub where your local repository will be pushed, run the following command.
+        git remote add origin https://github.com/albertogregoratti/nanogpt.git
+4. If the local repo was previously cloned, change the URL for origin (keeps the same remote name):
+        git remote set-url origin https://gitbub.com/albertogregoratti/nanogpt.git
+4. To verify that you set the remote URL correctly, run the following command:
+        git remote -v
+5. To push the changes in your local repository to GitHub, run the following command:
+        git push origin master
+
+
+Showing Remote Repos
+If you’ve cloned your repository, you should at least see origin
+that is the default name Git gives to the server you cloned from.
+
+git remote -v           => to display remote repo
+git remote show origin
+
+Pull
+git pull  = Fetch and merge changes on the remote server to your working directory
+
+git diff = to check conflicts
+git add = to mark the changed file
+
+Fetch
+https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging
+
+git fetch <remote>
+The fetch command only downloads the data to your local repository, it doesn’t automatically merge it.
+You have to merge it manually into your work when you’re ready.
+
+git pull
+It's essentially a git fetch immediately followed by a git merge
+
+Push
+Send changes to the master branch of remote repository
+git push <remote> <branch>
+If you want to push your master branch to your origin server:
+git push origin master
+git push --tags origin	= push all tags to remote repo
+
+Note: This command works only if you cloned from a server to which you have write access and
+if nobody has pushed in the meantime. If you and someone else clone at the same time and
+they push upstream and then you push upstream, your push will rightly be rejected.
+You’ll have to fetch their work first and incorporate it into yours before you’ll be allowed to push.
+
+How to create a Pull request
+doc: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request
+
+Create a pull request to propose a change to a repository.
+When thinking about branches, remember that the base branch is where changes should be applied,
+the head branch contains what you would like to be applied.
+1. On GitHub.com, navigate to the main page of the repository;
+2. In the "Branch" menu, choose the branch that contains your commits;
+3. Above the list of files, in the yellow banner, click Compare & pull request to create a pull request for the associated branch;
+4. Use the base branch dropdown menu to select the branch you'd like to merge your changes into,
+then use the compare branch drop-down menu to choose the topic branch you made your changes;
+5. Type a title and description for your pull request;
+6. To create a pull request that is ready for review, click Create Pull Request.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+How to Reset A Local Git Branch to Remote?
+https://www.freecodecamp.org/news/git-reset-origin-how-to-reset-a-local-branch-to-remote-tracking-branch/
+
+If you need to fetch the latest changes from the remote repository to be up to date with your local branch:
+1. Save the current state of your local branch (optional).
+2. Fetch the latest version of the code from the remote.
+3. Reset the local branch.
+
+1.  Optional: git branch backup_work
+2.  git checkout master
+    git fetch origin
+3.  git reset --hard origin/master
+
+In case of issues, abort the merge first:
+$ git reset --merge
+
+or
+# Reset all the changes back to the last commit.
+# Note: This cannot be reverted!
+$ git reset --hard HEAD
+
+
+
